@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -13,31 +14,6 @@ import (
 	"time"
 
 	"os"
-
-	"github.com/kovetskiy/godocs"
-	"github.com/reconquest/ser-go"
-	"github.com/seletskiy/hierr"
-)
-
-var (
-	version = "[manual build]"
-	usage   = "poke " + version + `
-
-poke is summoned for analysing MySQL slow query logs, poke reads time and
-query_time fields and adds additional field time_start (time - query_time);
-
-poke outputs records in JSON format only.
-
-Usage:
-    poke [options]
-    poke -h | --help
-    poke --version
-
-Options:
-    -f --file <path>  Specify file location to read. [default: /dev/stdin]
-    -h --help         Show this screen.
-    --version         Show version.
-`
 )
 
 var (
@@ -100,16 +76,33 @@ func compileRegexps() {
 	}
 }
 
-func main() {
-	args := godocs.MustParse(usage, version, godocs.UsePager)
+func Usage(showUsage bool) {
+	if showUsage {
+		flag.Usage()
+	}
+}
 
+func main() {
+	showHelp := flag.Bool("h", false, "show help")
+	file := flag.String("f", "", "specify `file` location to read")
+	flag.Parse()
+
+	if *showHelp {
+		Usage(true)
+	}
+
+	if *file != "" {
+		Run(*file)
+	}
+
+}
+
+func Run(filepath string) {
 	compileRegexps()
 
-	file, err := os.Open(args["--file"].(string))
+	file, err := os.Open(filepath)
 	if err != nil {
-		hierr.Fatalf(
-			err, "can't open file: %s", args["--file"].(string),
-		)
+		log.Fatal(err)
 	}
 
 	var (
@@ -126,9 +119,7 @@ func main() {
 				break
 			}
 
-			hierr.Fatalf(
-				err, "can't read input data",
-			)
+			log.Fatalln("can't read input data")
 		}
 
 		if isPrefix {
@@ -165,9 +156,7 @@ func main() {
 
 	data, err := json.MarshalIndent(records, "", "    ")
 	if err != nil {
-		hierr.Fatalf(
-			err, "unable to encode records to JSON",
-		)
+		log.Fatalln("unable to encode records to JSON")
 	}
 
 	fmt.Println(string(data))
@@ -224,10 +213,7 @@ func unmarshal(line string, record Record) error {
 
 		value, err := parse(raw, key, rule)
 		if err != nil {
-			return ser.Errorf(
-				err, "unable to parse %s: %s",
-				key, raw,
-			)
+			log.Fatalf("unable to parse %s: %s", key, raw)
 		}
 
 		record[strings.ToLower(key)] = value
@@ -248,7 +234,7 @@ func match(data, key string) (string, bool) {
 func parse(raw, key, rule string) (interface{}, error) {
 	switch rule {
 	case "datetime":
-		return time.Parse("060102 15:04:05.0000000000", raw)
+		return time.Parse("060102 15:04:05", raw)
 	case "time":
 		return time.ParseDuration(raw + "s")
 	case "string":
