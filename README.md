@@ -1,6 +1,6 @@
 # lami
 
-lami is a fork of [Egor Kovetskiy](https://github.com/kovetskiy)[poke](https://github.com/kovetskiy/poke) MySQL/MariaDB slow query log parser, lami can converts slow query log into JSON format.
+lami is a fork of [Egor Kovetskiy](https://github.com/kovetskiy) [poke](https://github.com/kovetskiy/poke) MySQL/MariaDB slow query log parser, lami can converts slow query log into JSON format.
 
 lami can detects following features:
 
@@ -10,10 +10,10 @@ lami can detects following features:
 
 ### How to use
 ```
-lami -f /pat/to/slow-query.log
+lami -f /path/to/slow-query.log
 ```
 
-lami will print the JSON output to stdout output
+lami will print the JSON output to log file
 
 ```
 [
