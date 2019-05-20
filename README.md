@@ -1,88 +1,36 @@
-# poke
+# lami
 
-poke is summoned for analyzing MySQL slow query logs, poke examines log
-entries, converts text to JSON format and detects following features:
+lami is a fork of [Egor Kovetskiy](https://github.com/kovetskiy)[poke](https://github.com/kovetskiy/poke) MySQL/MariaDB slow query log parser, lami can converts slow query log into JSON format.
+
+lami can detects following features:
 
 - time when query was started (using `Time:` and `Query_time` fields), 
 - query type: `SELECT`, `INSERT`, `UPDATE`, `DELETE`, `DROP`
 - query length
 
-After analyzing slow logs poke will print JSON output to stdout, like as
-following:
+### How to use
+```
+lami -f /pat/to/slow-query.log
+```
+
+lami will print the JSON output to stdout output
 
 ```
 [
     {
-        "bytes_sent": 0,
-        "filesort": false,
-        "filesort_on_disk": false,
-        "full_join": false,
-        "full_scan": false,
-        "lock_time": 3e-05,
-        "merge_passes": 0,
-        "qc_hit": false,
+        "lock_time": 0.000048,
         "query": "SET timestamp=1480443944;DELETE [...]",
-        "query_length": 590,
-        "query_time": 0.428312,
-        "query_type": "DELETE",
-        "rows_affected": 34,
-        "rows_examined": 34,
-        "rows_read": 0,
-        "rows_sent": 0,
-        "schema": "realty_multi",
-        "time": "2016-11-30 01:25:44.00009175",
-        "time_start": "2016-11-30 01:25:43.57177975",
-        "tmp_disk_tables": 0,
-        "tmp_table": false,
-        "tmp_table_on_disk": false,
-        "tmp_table_sizes": 0,
-        "tmp_tables": 0
-    },
-    {
-        "bytes_sent": 0,
-        "filesort": false,
-        "filesort_on_disk": false,
-        "full_join": false,
-        "full_scan": false,
-        "lock_time": 3.6e-05,
-        "merge_passes": 0,
-        "qc_hit": false,
-        "query": "SET timestamp=1480443944;INSERT [...]",
-        "query_length": 560,
-        "query_time": 0.374045,
-        "query_type": "INSERT",
-        "rows_affected": 31,
-        "rows_examined": 31,
-        "rows_read": 0,
-        "rows_sent": 0,
-        "schema": "realty_multi",
-        "time": "2016-11-30 01:25:44.00072050",
-        "time_start": "2016-11-30 01:25:43.62667550",
-        "tmp_disk_tables": 0,
-        "tmp_table": false,
-        "tmp_table_on_disk": false,
-        "tmp_table_sizes": 0,
-        "tmp_tables": 0
+        "query_length": 110,
+        "query_time": 36.083807,
+        "query_type": "",
+        "rows_affected": 0,
+        "rows_examined": 7342175,
+        "rows_sent": 1,
+        "schema": "dbmu",
+        "time": "2019-05-16 16:06:30.00000000",
+        "time_start": "2019-05-16 16:05:53.91619300"
     }
 ]
-```
-
-## What we can do with that JSON
-
-We can use [github.com/kovetskiy/jsql](https://github.com/kovetskiy/jsql) and
-query JSON dataset using SQL queries.
-
-
-## Installation
-
-Arch Linux User Repository:
-
-[https://aur.archlinux.org/packages/jsql-git/](https://aur.archlinux.org/packages/jsql-git/)
-
-or manually:
-
-```
-go get github.com/kovetskiy/jsql
 ```
 
 ## License
