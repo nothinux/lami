@@ -84,7 +84,8 @@ func Usage(showUsage bool) {
 
 func main() {
 	showHelp := flag.Bool("h", false, "show help")
-	file := flag.String("f", "", "specify `file` location to read")
+	file := flag.String("f", "", "specify file` location to read")
+
 	flag.Parse()
 
 	if *showHelp {
@@ -159,7 +160,22 @@ func Run(filepath string) {
 		log.Fatalln("unable to encode records to JSON")
 	}
 
-	fmt.Println(string(data))
+	if err := savetofile(filepath, string(data)); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func savetofile(output, data string) error {
+	s := strings.Split(output, ".")
+	filename := fmt.Sprintf("%s.json", s[0])
+	file, err := os.OpenFile(filename, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	fmt.Fprintf(file, "%s", data)
+	fmt.Println(filename)
+	return nil
 }
 
 func process(record Record) (Record, bool) {
