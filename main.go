@@ -105,6 +105,7 @@ func Run(filepath string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer file.Close()
 
 	var (
 		reader  = bufio.NewReader(file)
@@ -155,13 +156,15 @@ func Run(filepath string) {
 		records[index] = prepare(record)
 	}
 
-	data, err := json.MarshalIndent(records, "", "    ")
-	if err != nil {
-		log.Fatalln("unable to encode records to JSON")
-	}
+	for i := 0; i < len(records); i++ {
+		data, err := json.Marshal(records[i])
+		if err != nil {
+			log.Fatalln("unable to encode records to JSON")
+		}
 
-	if err := savetofile(filepath, string(data)); err != nil {
-		log.Fatal(err)
+		if err := savetofile(filepath, string(data)); err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 
@@ -173,8 +176,7 @@ func savetofile(output, data string) error {
 		return err
 	}
 	defer file.Close()
-	fmt.Fprintf(file, "%s", data)
-	fmt.Println(filename)
+	fmt.Fprintf(file, "%s\n", data)
 	return nil
 }
 
