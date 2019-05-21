@@ -78,27 +78,33 @@ func compileRegexps() {
 
 func Usage(showUsage bool) {
 	if showUsage {
-		flag.Usage()
+		fmt.Fprintf(os.Stderr, "Lami - MySQL/MariaDB slow query log parser\n\nUsage: %s -f [input-file] -o [ouput-file]\n\n", os.Args[0])
+		flag.PrintDefaults()
 	}
 }
 
 func main() {
 	showHelp := flag.Bool("h", false, "show help")
-	file := flag.String("f", "", "specify file` location to read")
+	file := flag.String("f", "", "specify `file location` to read")
+	out := flag.String("o", "", "specify `output` file location")
 
 	flag.Parse()
 
 	if *showHelp {
 		Usage(true)
+		return
 	}
 
-	if *file != "" {
-		Run(*file)
+	if *file != "" && *out != "" {
+		Run(*file, *out)
 	}
 
+	if *out == "" || *file == "" {
+		Usage(true)
+	}
 }
 
-func Run(filepath string) {
+func Run(filepath, output string) {
 	compileRegexps()
 
 	file, err := os.Open(filepath)
@@ -162,16 +168,14 @@ func Run(filepath string) {
 			log.Fatalln("unable to encode records to JSON")
 		}
 
-		if err := savetofile(filepath, string(data)); err != nil {
+		if err := savetofile(output, string(data)); err != nil {
 			log.Fatal(err)
 		}
 	}
 }
 
 func savetofile(output, data string) error {
-	s := strings.Split(output, ".")
-	filename := fmt.Sprintf("%s.json", s[0])
-	file, err := os.OpenFile(filename, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	file, err := os.OpenFile(output, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
 	}
