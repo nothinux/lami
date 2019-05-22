@@ -10,25 +10,24 @@ lami can detects following features:
 
 ### How to use
 ```
-lami -f /path/to/slow-query.log
+lami -f /path/to/slow-query.log -o /new/path/slow-query-json.log
 ```
 
 lami will print the JSON output to log file
 
 ```
-[
-    {
-        "lock_time": 0.000048,
-        "query": "SET timestamp=1480443944;DELETE [...]",
-        "query_length": 110,
-        "query_time": 36.083807,
-        "query_type": "",
-        "rows_affected": 0,
-        "rows_examined": 7342175,
-        "rows_sent": 1,
-        "schema": "dbmu",
-        "time": "2019-05-16 16:06:30.00000000",
-        "time_start": "2019-05-16 16:05:53.91619300"
+{
+    "lock_time": 0.000048,
+    "query": "SET timestamp=1480443944;DELETE [...]",
+    "query_length": 110,
+    "query_time": 36.083807,
+    "query_type": "",
+    "rows_affected": 0,
+    "rows_examined": 7342175,
+    "rows_sent": 1,
+    "schema": "dbmu",
+    "time": "2019-05-16 16:06:30.00000000",
+    "time_start": "2019-05-16 16:05:53.91619300"
     }
 ]
 ```
